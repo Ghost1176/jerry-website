@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jerry AI — Autonomous Trading System</title>
+<meta name="description" content="Jerry AI — JARVIS-style autonomous trading bot. Live signals, SMC analysis, 24/7 market scanning.">
+<meta property="og:title" content="Jerry AI Trading">
+<meta property="og:description" content="AI-powered autonomous trading signals. SMC + CRT analysis. 24/7.">
+<meta property="og:image" content="/og-image.png">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --card: #1a1a26;
+    --border: #2a2a3e;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --text: #e8e8f0;
+    --muted: #8888aa;
+    --green: #00d4aa;
+    --red: #ff6b6b;
+    --gold: #ffd700;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  /* NAV */
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; backdrop-filter:blur(20px); background:rgba(10,10,15,0.8); border-bottom:1px solid var(--border); padding:0 5%; display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .logo { font-size:1.4rem; font-weight:700; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .nav-links { display:flex; gap:2rem; font-size:.9rem; color:var(--muted); }
+  .nav-links a:hover { color:var(--text); }
+  .nav-cta { background:var(--accent); color:#fff; padding:.5rem 1.2rem; border-radius:8px; font-size:.9rem; font-weight:500; transition:.2s; }
+  .nav-cta:hover { background:#7c73ff; }
+
+  /* HERO */
+  .hero { min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:100px 5% 60px; position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 50% at 50% 40%, rgba(108,99,255,.15) 0%, transparent 70%); pointer-events:none; }
+  .hero-badge { display:inline-flex; align-items:center; gap:.5rem; background:rgba(108,99,255,.15); border:1px solid rgba(108,99,255,.3); border-radius:100px; padding:.3rem 1rem; font-size:.8rem; color:var(--accent); margin-bottom:1.5rem; }
+  .hero-badge::before { content:''; width:8px; height:8px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+  h1 { font-size:clamp(2.5rem,6vw,4.5rem); font-weight:800; line-height:1.1; margin-bottom:1.5rem; }
+  h1 span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero p { font-size:1.2rem; color:var(--muted); max-width:600px; margin:0 auto 2.5rem; line-height:1.7; }
+  .hero-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+  .btn-primary { background:var(--accent); color:#fff; padding:.8rem 2rem; border-radius:10px; font-weight:600; font-size:1rem; transition:.2s; display:inline-flex; align-items:center; gap:.5rem; }
+  .btn-primary:hover { background:#7c73ff; transform:translateY(-2px); }
+  .btn-secondary { background:transparent; color:var(--text); padding:.8rem 2rem; border-radius:10px; font-weight:600; font-size:1rem; border:1px solid var(--border); transition:.2s; display:inline-flex; align-items:center; gap:.5rem; }
+  .btn-secondary:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* LIVE TICKER */
+  .ticker { background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:.6rem 0; overflow:hidden; white-space:nowrap; }
+  .ticker-inner { display:inline-flex; gap:3rem; animation:ticker 30s linear infinite; }
+  .ticker-item { display:inline-flex; align-items:center; gap:.5rem; font-size:.85rem; }
+  .ticker-item .sym { color:var(--muted); font-weight:600; }
+  .ticker-item .price { color:var(--text); font-weight:500; }
+  .ticker-item .chg.up { color:var(--green); }
+  .ticker-item .chg.dn { color:var(--red); }
+  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  /* STATS */
+  .stats { padding:5rem 5%; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; max-width:1100px; margin:0 auto; }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.8rem; text-align:center; }
+  .stat-card .num { font-size:2.5rem; font-weight:800; color:var(--accent); }
+  .stat-card .num.green { color:var(--green); }
+  .stat-card .label { color:var(--muted); font-size:.9rem; margin-top:.3rem; }
+
+  /* FEATURES */
+  .section { padding:6rem 5%; max-width:1100px; margin:0 auto; }
+  .section-label { color:var(--accent); font-size:.85rem; font-weight:600; text-transform:uppercase; letter-spacing:.1em; margin-bottom:.8rem; }
+  .section-title { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:700; margin-bottom:1rem; }
+  .section-sub { color:var(--muted); font-size:1.1rem; max-width:600px; line-height:1.7; }
+  .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; margin-top:3rem; }
+  .feature-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2rem; transition:.3s; }
+  .feature-card:hover { border-color:var(--accent); transform:translateY(-4px); }
+  .feature-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:1.2rem; }
+  .feature-card h3 { font-size:1.1rem; font-weight:600; margin-bottom:.6rem; }
+  .feature-card p { color:var(--muted); font-size:.9rem; line-height:1.6; }
+
+  /* SIGNALS PREVIEW */
+  .signals-preview { background:var(--bg2); padding:6rem 5%; }
+  .signals-inner { max-width:1100px; margin:0 auto; }
+  .signal-feed { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-top:2rem; }
+  .signal-header { padding:1rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.5rem; font-size:.9rem; color:var(--muted); }
+  .signal-header::before { content:''; width:8px; height:8px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+  .signal-row { padding:1.2rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+  .signal-row:last-child { border-bottom:none; }
+  .signal-dir { padding:.25rem .8rem; border-radius:6px; font-size:.8rem; font-weight:700; }
+  .signal-dir.buy { background:rgba(0,212,170,.15); color:var(--green); }
+  .signal-dir.sell { background:rgba(255,107,107,.15); color:var(--red); }
+  .signal-sym { font-weight:700; font-size:1rem; min-width:80px; }
+  .signal-conf { color:var(--muted); font-size:.85rem; }
+  .signal-conf span { color:var(--accent); font-weight:600; }
+  .signal-reasons { color:var(--muted); font-size:.8rem; flex:1; }
+  .signal-time { color:var(--muted); font-size:.8rem; margin-left:auto; }
+
+  /* HOW IT WORKS */
+  .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2rem; margin-top:3rem; }
+  .step { text-align:center; }
+  .step-num { width:56px; height:56px; border-radius:50%; background:rgba(108,99,255,.15); border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:1.3rem; font-weight:700; color:var(--accent); margin:0 auto 1.2rem; }
+  .step h3 { font-size:1rem; font-weight:600; margin-bottom:.5rem; }
+  .step p { color:var(--muted); font-size:.9rem; line-height:1.6; }
+
+  /* CTA SECTION */
+  .cta-section { padding:6rem 5%; text-align:center; }
+  .cta-box { background:linear-gradient(135deg,rgba(108,99,255,.2),rgba(0,212,170,.1)); border:1px solid rgba(108,99,255,.3); border-radius:24px; padding:4rem 2rem; max-width:700px; margin:0 auto; }
+  .cta-box h2 { font-size:2rem; font-weight:700; margin-bottom:1rem; }
+  .cta-box p { color:var(--muted); margin-bottom:2rem; }
+  .social-links { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+  .social-btn { display:inline-flex; align-items:center; gap:.5rem; padding:.7rem 1.5rem; border-radius:10px; font-size:.9rem; font-weight:500; border:1px solid var(--border); transition:.2s; }
+  .social-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .social-btn.telegram { border-color:#2AABEE; color:#2AABEE; }
+  .social-btn.instagram { border-color:#E1306C; color:#E1306C; }
+
+  /* FOOTER */
+  footer { border-top:1px solid var(--border); padding:2rem 5%; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; color:var(--muted); font-size:.85rem; }
+
+  /* RESPONSIVE */
+  @media(max-width:640px) {
+    .nav-links { display:none; }
+    .hero-btns { flex-direction:column; align-items:center; }
+  }
+
+  /* SCROLL ANIMATION */
+  .fade-up { opacity:0; transform:translateY(30px); transition:opacity .6s ease,transform .6s ease; }
+  .fade-up.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">⚡ Jerry AI</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#signals">Live Signals</a>
+    <a href="#how">How it works</a>
+  </div>
+  <a href="https://t.me/JERRYBHAIONLINE" target="_blank" class="nav-cta">Join Telegram →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-badge">🤖 Live — 24/7 Autonomous Trading</div>
+    <h1>Meet <span>Jerry AI</span> —<br>Your JARVIS for Trading</h1>
+    <p>Autonomous trading bot powered by SMC, CRT, Multi-Timeframe analysis, and AI. Scanning 5 symbols 24/7. Real signals, real trades.</p>
+    <div class="hero-btns">
+      <a href="https://t.me/JERRYBHAIONLINE" target="_blank" class="btn-primary">📱 Live Signals on Telegram</a>
+      <a href="https://instagram.com/theshadowlogic01012026" target="_blank" class="btn-secondary">📸 Follow on Instagram</a>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="ticker">
+    <span class="ticker-item"><span class="sym">BTCUSD</span><span class="price" id="btc-price">$62,935</span><span class="chg up" id="btc-chg">+1.2%</span></span>
+    <span class="ticker-item"><span class="sym">EURUSD</span><span class="price" id="eur-price">1.14347</span><span class="chg dn">-0.1%</span></span>
+    <span class="ticker-item"><span class="sym">GBPUSD</span><span class="price" id="gbp-price">1.33479</span><span class="chg up">+0.3%</span></span>
+    <span class="ticker-item"><span class="sym">GOLD</span><span class="price">$2,338</span><span class="chg up">+0.5%</span></span>
+    <span class="ticker-item"><span class="sym">USDJPY</span><span class="price">161.34</span><span class="chg dn">-0.2%</span></span>
+    <span class="ticker-item"><span class="sym">Jerry Conf</span><span class="price" style="color:#6c63ff">MTF 4/4 ✓</span><span class="chg up">Active</span></span>
+    <!-- Duplicate for seamless loop -->
+    <span class="ticker-item"><span class="sym">BTCUSD</span><span class="price">$62,935</span><span class="chg up">+1.2%</span></span>
+    <span class="ticker-item"><span class="sym">EURUSD</span><span class="price">1.14347</span><span class="chg dn">-0.1%</span></span>
+    <span class="ticker-item"><span class="sym">GBPUSD</span><span class="price">1.33479</span><span class="chg up">+0.3%</span></span>
+    <span class="ticker-item"><span class="sym">GOLD</span><span class="price">$2,338</span><span class="chg up">+0.5%</span></span>
+    <span class="ticker-item"><span class="sym">USDJPY</span><span class="price">161.34</span><span class="chg dn">-0.2%</span></span>
+    <span class="ticker-item"><span class="sym">Jerry Conf</span><span class="price" style="color:#6c63ff">MTF 4/4 ✓</span><span class="chg up">Active</span></span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats fade-up">
+  <div class="stat-card"><div class="num">5</div><div class="label">Symbols scanned 24/7</div></div>
+  <div class="stat-card"><div class="num green">MTF 4/4</div><div class="label">Multi-timeframe alignment</div></div>
+  <div class="stat-card"><div class="num">9+</div><div class="label">AI confluence layers</div></div>
+  <div class="stat-card"><div class="num green">Live</div><div class="label">Autonomous trading active</div></div>
+</div>
+
+<!-- FEATURES -->
+<section class="section fade-up" id="features">
+  <div class="section-label">What Jerry does</div>
+  <div class="section-title">Full JARVIS-style<br>trading intelligence</div>
+  <p class="section-sub">Jerry combines institutional-grade analysis with fully autonomous execution — 24/7, no emotions.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(108,99,255,.15)">🧠</div>
+      <h3>SMC + CRT Analysis</h3>
+      <p>Smart Money Concepts — Order Blocks, FVGs, CHoCH, BOS, Liquidity zones. Candle Range Theory setups on H1/M15/M5.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(0,212,170,.15)">📊</div>
+      <h3>Multi-Timeframe Filter</h3>
+      <p>M5 + M15 + H1 + H4 must all align. MTF 4/4 = maximum confluence. Low quality setups are automatically skipped.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,215,0,.15)">⚡</div>
+      <h3>ICT Kill Zones</h3>
+      <p>London Open, NY Open, Asia KZ — Jerry knows exactly when institutions move. +18 confidence boost during peak sessions.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,107,107,.15)">🛡️</div>
+      <h3>Risk Brain</h3>
+      <p>Dynamic position sizing based on confidence + streak. Pattern learning from historical trades. Drawdown protection built-in.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(0,212,170,.15)">📰</div>
+      <h3>News + Sentiment</h3>
+      <p>High-impact news filter pauses trading ±15 min. Fear & Greed Index, CryptoPanic, StockTwits — all injected into signals.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(108,99,255,.15)">🔄</div>
+      <h3>Self-Coding Engine</h3>
+      <p>Jerry detects its own bugs, analyzes logs, and applies fixes automatically. Every 6 hours — fully autonomous improvement.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE SIGNALS PREVIEW -->
+<div class="signals-preview fade-up" id="signals">
+  <div class="signals-inner">
+    <div class="section-label">Live signals</div>
+    <div class="section-title">Recent Jerry signals</div>
+    <div class="signal-feed">
+      <div class="signal-header">Live feed — Jerry AI autonomous signals</div>
+      <div class="signal-row">
+        <span class="signal-dir buy">BUY</span>
+        <span class="signal-sym">BTCUSD</span>
+        <span class="signal-conf">Conf: <span>100</span> | MTF: 4/4 | RR: 1:2</span>
+        <span class="signal-reasons">H4 uptrend · H1 aligned · CHoCH · NY Open KZ · Sentiment BUY</span>
+        <span class="signal-time">Today 22:29</span>
+      </div>
+      <div class="signal-row">
+        <span class="signal-dir sell">SELL</span>
+        <span class="signal-sym">BTCUSD</span>
+        <span class="signal-conf">Conf: <span>92</span> | MTF: 4/4 | RR: 1:2</span>
+        <span class="signal-reasons">H4 downtrend · MTF 4/4 · RSI H1:35 · MACD bearish · EMA bear cross</span>
+        <span class="signal-time">Yesterday 00:10</span>
+      </div>
+      <div class="signal-row">
+        <span class="signal-dir buy">BUY</span>
+        <span class="signal-sym">GBPUSD</span>
+        <span class="signal-conf">Conf: <span>93</span> | MTF: 2/4 | RR: 1:2</span>
+        <span class="signal-reasons">H4 uptrend · H1 aligned · RSI oversold · London Open KZ</span>
+        <span class="signal-time">Today 22:42</span>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:1rem;text-align:center">
+      📱 Get live signals instantly → <a href="https://t.me/JERRYBHAIONLINE" style="color:var(--accent)">@JERRYBHAIONLINE on Telegram</a>
+    </p>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section fade-up" id="how">
+  <div class="section-label">How it works</div>
+  <div class="section-title">From market scan to<br>executed trade</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Market scan</h3>
+      <p>Jerry scans BTCUSD, EURUSD, GBPUSD, GOLD, USDJPY every 2-4 minutes across 5 timeframes.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>SMC analysis</h3>
+      <p>Order blocks, FVGs, CHoCH, liquidity zones, OTE fib levels — all scored and weighted.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Confluence check</h3>
+      <p>9+ layers including sentiment, news filter, vision AI, and Risk Brain pattern learning.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h3>Auto execute</h3>
+      <p>Trade fires via MT5 bridge. Trailing SL activates. Journal logs the trade. Telegram alert sent.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section fade-up">
+  <div class="cta-box">
+    <h2>Follow Jerry's trades live</h2>
+    <p>Free signals on Telegram. Trade analysis on Instagram. Join the community.</p>
+    <div class="social-links">
+      <a href="https://t.me/JERRYBHAIONLINE" target="_blank" class="social-btn telegram">📱 Telegram Channel</a>
+      <a href="https://instagram.com/theshadowlogic01012026" target="_blank" class="social-btn instagram">📸 Instagram</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>⚡ Jerry AI — Autonomous Trading System</div>
+  <div>⚠️ Not financial advice. Trading involves risk.</div>
+</footer>
+
+<script>
+// Scroll fade-in animation
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior:'smooth' });
+  });
+});
+</script>
+</body>
+</html>
